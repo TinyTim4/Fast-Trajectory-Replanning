@@ -2,7 +2,7 @@ import random
 from heapq import heapify, heappush, heappop
 
 class Node:
-    def __init__(self, gval, xcoord, ycoord, parent = None, hval = 99999):
+    def __init__(self, gval, xcoord, ycoord, parent, hval):
         self.gval = gval
         self.hval = hval
         self.fval = gval + hval
@@ -20,38 +20,43 @@ def make_maze():
     return arr
 
 def astar(robx, roby, goalx, goaly):
-    x = 0
+    g = 0
     openList = []
+    closedList = {}
     heapify(openList)
-    current = Node(x, calculateDistance(robx,roby,goalx,goaly),robx,roby)
+    current = Node(g,robx,roby,None, calculateDistance(robx,roby,goalx,goaly))
     while(True):
-        north,south,east,west = Node()
-        x = x+1
+        g = g+1
         if(roby < 9):
-            north = Node(x,current.xcoord,current.ycoord+1,current, calculateDistance(current.xcoord,current.ycoord+1,goalx,goaly))
+            north = Node(g,current.xcoord,current.ycoord+1,current, calculateDistance(current.xcoord,current.ycoord+1,goalx,goaly))
+            heappush(openList, (north.fval, north))
         if(roby > 0):
-            south = Node(x,current.xcoord,current.ycoord-1,current, calculateDistance(current.xcoord,current.ycoord-1,goalx,goaly))
+            south = Node(g,current.xcoord,current.ycoord-1,current, calculateDistance(current.xcoord,current.ycoord-1,goalx,goaly))
+            heappush(openList, (south.fval, south))
         if(robx < 9):
-            east = Node(x,current.xcoord+1,current.ycoord,current, calculateDistance(current.xcoord+1,current.ycoord,goalx,goaly))
+            east = Node(g,current.xcoord+1,current.ycoord,current, calculateDistance(current.xcoord+1,current.ycoord,goalx,goaly))
+            heappush(openList, (east.fval, east))
         if(robx > 0):
-            west = Node(x,current.xcoord-1,current.ycoord,current, calculateDistance(current.xcoord-1,current.ycoord,goalx,goaly))
-        heappush(openList, (north.fval, north))
-        heappush(openList, (south.fval, south))
-        heappush(openList, (east.fval, east))
-        heappush(openList, (west.fval, west))
+            west = Node(g,current.xcoord-1,current.ycoord,current, calculateDistance(current.xcoord-1,current.ycoord,goalx,goaly))
+            heappush(openList, (west.fval, west))
         tempNode = heappop(openList)
         if(tempNode.hval == 0):
-            break
+            return closedList
         else:
+            if((tempNode.xcoord, tempNode.ycoord) in closedList): 
+                if(closedList.get(tempNode.xcoord, tempNode.ycoord).fval > closedList.fval):
+                    closedList.get(tempNode.xcoord, tempNode.ycoord).fval = closedList.fval
+            else:
+                closedList[(tempNode.xcoord, tempNode.ycoord)] = tempNode
             current = tempNode
             continue
-    return 0
 
 def calculateDistance(xval, yval, goalx, goaly):
     return abs(goalx-xval) + abs(goaly-yval)
 
 if __name__ == '__main__':
     arr = make_maze()
-    robx, roby = (0,0)
+    closedlist = astar(0,0,9,9)
     for row in arr:
         print(row)
+    print(closedlist)
