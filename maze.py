@@ -19,14 +19,25 @@ Snode = roby - 1
 Enode = robx + 1
 Wnode = robx - 1
 
+We need to tweak this code below:
+The code below compares all of the nodes. Either the node is an obstacle or it does not have the smallest fval.
+We should first check if the node is a node we explored before.
+Then, we should compare the nodes
+Then, we should determine if the node we want to go to is an obstacle.
+
+
 if Nnode.fval < Enode.fval and Nnode.fval < Snode.fval and Nnode.fval < Wnode.fval and Nnode.obs == False:
     roby = roby + 1
-if Snode.fval < Nnode.fval and Snode.fval < Enode.fval and Snode.fval < Wnode.fval and Snode.obs ==  False:
+// Either Nnode is not the optimal path or it is an obstacle
+else if Snode.fval < Enode.fval and Snode.fval < Wnode.fval and Snode.obs ==  False:
     roby = roby - 1
-if Enode.fval < Nnode.fval and Enode.fval < Snode.fval and Enode.fval < Wnode.fval and Enode.obs == False:
+//Either Snode is not the optimal path or it is an obstacle
+else if Enode.fval < Wnode.fval and Enode.obs == False:
     robx = robx + 1
-if Wnode.fval < Nnode.fval and Wnode.fval < Enode.fval and Wnode,fval < Snode.fval and Wnode.obs == False:
+// Either Enode is an obstacle or is not the optimal path
+else if Wnode.fval  == False:
     robx = robx - 1
+else 
 """
         
 def make_maze(): 
