@@ -10,6 +10,25 @@ class Node:
         self.ycoord = ycoord
         self.parent = parent
 
+"""
+Some ideas
+----------
+boolean obstacle for node
+Nnode = roby + 1
+Snode = roby - 1
+Enode = robx + 1
+Wnode = robx - 1
+
+if Nnode.fval < Enode.fval and Nnode.fval < Snode.fval and Nnode.fval < Wnode.fval and Nnode.obs == False:
+    roby = roby + 1
+if Snode.fval < Nnode.fval and Snode.fval < Enode.fval and Snode.fval < Wnode.fval and Snode.obs ==  False:
+    roby = roby - 1
+if Enode.fval < Nnode.fval and Enode.fval < Snode.fval and Enode.fval < Wnode.fval and Enode.obs == False:
+    robx = robx + 1
+if Wnode.fval < Nnode.fval and Wnode.fval < Enode.fval and Wnode,fval < Snode.fval and Wnode.obs == False:
+    robx = robx - 1
+"""
+        
 def make_maze(): 
     rows, cols = (10, 10)
     sampleList = [0,1]
