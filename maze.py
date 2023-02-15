@@ -1,6 +1,8 @@
 import random
 from heapq import heapify, heappush, heappop
 
+#Initializes a node which represents a grid point. Each node will contain
+#the x y coordinate, its g value, h value, and a pointer to the parent node
 class Node:
     def __init__(self, gval, xcoord, ycoord, parent, hval):
         self.gval = gval
@@ -11,7 +13,8 @@ class Node:
         self.parent = parent
         self.obs = False
 
-
+#Generates a random 10x10 grid with 1s as obstacles. (0,9) is start point
+#and (9,9) is the goal
 def make_maze(): 
     rows, cols = (10, 10)
     sampleList = ['0','1']
@@ -21,6 +24,8 @@ def make_maze():
     arr[9][9] = '0'
     return arr
 
+
+#Runs A* on a specific gridpoint to find the most optimal path to the goal
 def astar(robx, roby, goalx, goaly, explored):
     openList = []
     closedList = {}
@@ -72,6 +77,8 @@ def astar(robx, roby, goalx, goaly, explored):
             current = tempNode
             continue
 
+#Pushes a Node into the open list. If a node with the same x y position is already in it,
+#compare the f values and replaes it if it is lower
 def pushHeap(node, heap):
     for element in heap:
         if(element[4].xcoord == node.xcoord and element[4].ycoord == node.ycoord):
@@ -81,9 +88,12 @@ def pushHeap(node, heap):
     heappush(heap, (node.fval, 9-node.gval,9-node.xcoord, 9-node.ycoord, node))
     return heap
 
+#Calculates the h value of each node, which would be the Manhattan distance
 def calculateDistance(xval, yval, goalx, goaly):
     return abs(goalx-xval) + abs(goaly-yval)
 
+#When travelling throught the grid, keep track of the properties of the neighbors and
+#check whether or not it has an obstacle or not
 def addNeighbors(node, exploredList, arr):
     x = node.xcoord
     y = node.ycoord
@@ -110,7 +120,7 @@ def addNeighbors(node, exploredList, arr):
 
         
 
-
+#Main function
 if __name__ == '__main__':
     exploredList = {}
     arr = make_maze()
