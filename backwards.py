@@ -37,35 +37,33 @@ def astar(robx, roby, goalx, goaly, explored):
             north = Node(current.gval+1,current.xcoord,current.ycoord-1,current, calculateDistance(current.xcoord,current.ycoord-1,goalx,goaly))
             if((current.xcoord, current.ycoord-1) in explored):
                 if(explored[(current.xcoord, current.ycoord-1)] == False):
-                    openList = pushHeap(north, openList, lengthx, lengthy)
+                    openList = pushHeap(north, openList, lengthx, lengthy, closedList)
             else:
-                openList = pushHeap(north, openList, lengthx, lengthy)
+                openList = pushHeap(north, openList, lengthx, lengthy, closedList)
         if(current.ycoord < goaly):
             south = Node(current.gval+1,current.xcoord,current.ycoord+1,current, calculateDistance(current.xcoord,current.ycoord+1,goalx,goaly))
             if((current.xcoord, current.ycoord+1) in explored):
                 if(explored[(current.xcoord, current.ycoord+1)] == False):
-                    openList = pushHeap(south, openList, lengthx, lengthy)
+                    openList = pushHeap(south, openList, lengthx, lengthy, closedList)
             else:
-                openList = pushHeap(south, openList, lengthx, lengthy)
+                openList = pushHeap(south, openList, lengthx, lengthy, closedList)
         if(current.xcoord < goalx):
             east = Node(current.gval+1,current.xcoord+1,current.ycoord,current, calculateDistance(current.xcoord+1,current.ycoord,goalx,goaly))
             if((current.xcoord+1, current.ycoord) in explored):
                 if(explored[(current.xcoord+1, current.ycoord)] == False):
-                    openList = pushHeap(east, openList, lengthx, lengthy)
+                    openList = pushHeap(east, openList, lengthx, lengthy, closedList)
             else:
-                openList = pushHeap(east, openList, lengthx, lengthy)
+                openList = pushHeap(east, openList, lengthx, lengthy, closedList)
         if(current.xcoord > 0):
             west = Node(current.gval+1,current.xcoord-1,current.ycoord,current, calculateDistance(current.xcoord-1,current.ycoord,goalx,goaly))
             if((current.xcoord-1, current.ycoord) in explored):
                 if(explored[(current.xcoord-1, current.ycoord)] == False):
-                    openList = pushHeap(west, openList, lengthx, lengthy)
+                    openList = pushHeap(west, openList, lengthx, lengthy, closedList)
             else:
-                openList = pushHeap(west, openList, lengthx, lengthy)
+                openList = pushHeap(west, openList, lengthx, lengthy, closedList)
         if(not openList):
             return None
         tempNode = heappop(openList)[4]
-        if(tempNode.gval > 10000):
-            return None
         if(tempNode.hval == 0):
             closedList[(tempNode.xcoord, tempNode.ycoord)] = tempNode
             return tempNode
@@ -80,12 +78,14 @@ def astar(robx, roby, goalx, goaly, explored):
 
 #Pushes a Node into the open list. If a node with the same x y position is already in it,
 #compare the f values and replaes it if it is lower
-def pushHeap(node, heap, lengthx, lengthy):
+def pushHeap(node, heap, lengthx, lengthy, closedList):
     for element in heap:
         if(element[4].xcoord == node.xcoord and element[4].ycoord == node.ycoord):
             if(element[4].fval > node.fval):
                 element[4].fval = node.fval
             return heap
+    if((node.xcoord, node.ycoord) in closedList):
+        return heap
     heappush(heap, (node.fval, -node.gval,lengthx-node.xcoord, lengthy-node.ycoord, node))
     return heap
 
@@ -123,12 +123,15 @@ def addNeighbors(node, exploredList, arr, lengthx, lengthy):
 #Main function
 if __name__ == '__main__':
     exploredList = {}
-    arr = make_maze(11,11)
+    arr = make_maze(101,101)
     currentx, currenty = (0,0)
     (x,y) = (0,0)
     ansFile = open('outputBackwards.txt', 'w')
-    lengthx, lengthy = (10,10)
+    lengthx, lengthy = (100,100)
+    count = 0
     while(x != lengthx or y != lengthy):
+        ansFile.write("Time step %d \n" %count)
+        count = count+1
         for row in arr:
             ansFile.writelines(row)
             ansFile.write("\n")
@@ -158,6 +161,7 @@ if __name__ == '__main__':
                 addNeighbors(current,exploredList,arr, lengthx, lengthy)
                 arr[x][y] = '* '
             pastKey = (keys[0], keys[1])
+    ansFile.write("Final path: \n")
     for row in arr:
         ansFile.writelines(row)
         ansFile.write("\n")       
