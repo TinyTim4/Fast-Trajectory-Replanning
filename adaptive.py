@@ -41,30 +41,30 @@ def astar(robx, roby, goalx, goaly, explored, closedList):
             north = Node(current.gval+1,current.xcoord,current.ycoord-1,current, calculateDistance(current.xcoord,current.ycoord-1,goalx,goaly))
             if((current.xcoord, current.ycoord-1) in explored):
                 if(explored[(current.xcoord, current.ycoord-1)] == False):
-                    openList = pushHeap(north, openList, lengthx, lengthy, visited)
+                    openList = pushHeap(north, openList, lengthx, lengthy, visited, closedList)
             else:
-                openList = pushHeap(north, openList, lengthx, lengthy, visited)
+                openList = pushHeap(north, openList, lengthx, lengthy, visited, closedList)
         if(current.ycoord < goaly):
             south = Node(current.gval+1,current.xcoord,current.ycoord+1,current, calculateDistance(current.xcoord,current.ycoord+1,goalx,goaly))
             if((current.xcoord, current.ycoord+1) in explored):
                 if(explored[(current.xcoord, current.ycoord+1)] == False):
-                    openList = pushHeap(south, openList, lengthx, lengthy, visited)
+                    openList = pushHeap(south, openList, lengthx, lengthy, visited, closedList)
             else:
-                openList = pushHeap(south, openList, lengthx, lengthy, visited)
+                openList = pushHeap(south, openList, lengthx, lengthy, visited, closedList)
         if(current.xcoord < goalx):
             east = Node(current.gval+1,current.xcoord+1,current.ycoord,current, calculateDistance(current.xcoord+1,current.ycoord,goalx,goaly))
             if((current.xcoord+1, current.ycoord) in explored):
                 if(explored[(current.xcoord+1, current.ycoord)] == False):
-                    openList = pushHeap(east, openList, lengthx, lengthy, visited)
+                    openList = pushHeap(east, openList, lengthx, lengthy, visited, closedList)
             else:
-                openList = pushHeap(east, openList, lengthx, lengthy, visited)
+                openList = pushHeap(east, openList, lengthx, lengthy, visited, closedList)
         if(current.xcoord > 0):
             west = Node(current.gval+1,current.xcoord-1,current.ycoord,current, calculateDistance(current.xcoord-1,current.ycoord,goalx,goaly))
             if((current.xcoord-1, current.ycoord) in explored):
                 if(explored[(current.xcoord-1, current.ycoord)] == False):
-                    openList = pushHeap(west, openList, lengthx, lengthy, visited)
+                    openList = pushHeap(west, openList, lengthx, lengthy, visited, closedList)
             else:
-                openList = pushHeap(west, openList, lengthx, lengthy, visited)
+                openList = pushHeap(west, openList, lengthx, lengthy, visited, closedList)
         if(not openList):
             return None
         tempNode = heappop(openList)[4]
@@ -73,22 +73,22 @@ def astar(robx, roby, goalx, goaly, explored, closedList):
             closedList[(tempNode.xcoord, tempNode.ycoord)] = tempNode
             return tempNode
         else:
-            if ((tempNode.xcoord, tempNode.ycoord) in closedList):
-                if(closedList[(tempNode.xcoord, tempNode.ycoord)].fval > tempNode.fval):
-                    closedList[(tempNode.xcoord, tempNode.ycoord)] = tempNode
-            else:
+            if ((tempNode.xcoord, tempNode.ycoord) not in closedList):
                 closedList[(tempNode.xcoord, tempNode.ycoord)] = tempNode
             current = tempNode
 
 #Pushes a Node into the open list. If a node with the same x y position is already in it,
 #compare the f values and replaes it if it is lower
-def pushHeap(node, heap, lengthx, lengthy, visited):
+def pushHeap(node, heap, lengthx, lengthy, visited, closedList):
     for element in heap:
         if(element[4].xcoord == node.xcoord and element[4].ycoord == node.ycoord):
-            if(element[4].fval > node.fval):
-                element[4].fval = node.fval
             return heap
     if((node.xcoord, node.ycoord) in visited):
+        return heap
+    elif((node.xcoord, node.ycoord) in closedList):
+        node.hval = closedList[(node.xcoord, node.ycoord)].hval
+        node.fval = node.gval + node.hval
+        heappush(heap, (node.fval, -node.gval,lengthx-node.xcoord, lengthy-node.ycoord, node))
         return heap
     heappush(heap, (node.fval, -node.gval,lengthx-node.xcoord, lengthy-node.ycoord, node))
     return heap
